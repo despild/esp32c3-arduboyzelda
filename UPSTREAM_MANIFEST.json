@@ -1,7 +1,7 @@
 {
   "upstream": "https://github.com/Pharap/ardynia",
   "revision": "e07fafd1d076481c6fe3c0f85695c98e2dc976d6",
-  "status": "Source preparation only; no playable ESP32 firmware yet.",
+  "status": "Unmodified code snapshot; the playable ESP32 adaptation is maintained separately in src/.",
   "excluded": [
     "sfx.cpp",
     "sfx.h",

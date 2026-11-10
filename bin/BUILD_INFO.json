@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "date": "2026-11-10",
+  "target": "ESP32-C3 4MB, SSD1306 72x40 SDA5 SCL6",
+  "toolchain": "Arduino ESP32 core 3.1.1",
+  "verified": "Standalone build; integrated hardware gameplay. Complete playthrough not verified.",
+  "upstream_revision": "e07fafd1d076481c6fe3c0f85695c98e2dc976d6",
+  "sha256": {
+    "ArduboyQuest.ino.bin": "64b4ff41de77a2ca4ba70af173e0c8cfd96f5b8146e7460820a33d3dff318e31",
+    "ArduboyQuest.ino.bootloader.bin": "802cbee04f0a69866d591ae65d9a046106f78ccce9e1bdd4accc8eb2292dd373",
+    "ArduboyQuest.ino.partitions.bin": "a5c158c9d595921d7ba00c967cde7e023fb1b8652cc1f40bad14e5f0ca749ea0"
+  }
+}

@@ -2,15 +2,15 @@
 
 [한국어](README.md) · [User guide / 사용 가이드](USER_GUIDE.md) · [Porting notes](PORTING.md)
 
-An independent repository preparing an Arduboy-style top-down adventure for the ESP32-C3 mini's **0.42-inch, 72×40, 1-bit OLED**. The requested repository name is `esp32c3-arduboyzelda`. This is not Nintendo's Zelda or an NES emulator.
+An independent repository porting an Arduboy-style top-down adventure for the ESP32-C3 mini's **0.42-inch, 72×40, 1-bit OLED**. The requested repository name is `esp32c3-arduboyzelda`. This is not Nintendo's Zelda or an NES emulator.
 
-**Current status: source preparation only. There is no playable ESP32 port, game binary or controller mode yet.** Pocket World's current dungeon is a separate original mini game.
+**Pocket Quest is an experimental playable port.** The ESP32 compatibility layer, original art, native 72×40 HUD/menus and controller mode have passed real-board checks. Pocket World's original mini dungeon remains a separate mode.
 
 ## Selected source
 
 The source material is [Ardynia](https://github.com/Pharap/ardynia), originally by Matt Greer, pinned to revision `e07fafd1d076481c6fe3c0f85695c98e2dc976d6`. It targets the 128×64 Arduboy and includes game logic, entities, maps and inventory code.
 
-Its license distinguishes **MIT code from restricted graphics**. A ROM-free project does not automatically grant permission to modify and redistribute its artwork. Original sprite, tile and font images and game binaries are excluded here. Original replacement assets and a silent platform layer must be implemented before integrating a playable port.
+Its license distinguishes **MIT code from restricted graphics**. Original sprite, tile and font images and audio are excluded. Newly authored patterns in `tools/make_assets.py` generate replacement graphics; the platform sound interface is silent.
 
 ## Included material
 
@@ -18,16 +18,27 @@ Its license distinguishes **MIT code from restricted graphics**. A ROM-free proj
 - `vendor/ardynia/LICENSE`: Full original terms, including the graphics restriction and MIT license.
 - `tools/prepare_sources.py`: Code import/verification tool that excludes graphics and audio files.
 - `UPSTREAM_MANIFEST.json`: Revision, exclusion list and per-file SHA256 hashes.
-- `PORTING.md`: Work needed for 32-bit pointers, display, input, storage and distribution.
+- `src/`: ESP32 port, input/NVS compatibility, new renderer and artwork.
+- `tools/assemble_port.py`: Reapplies adaptations while preserving the original snapshot.
+- `firmware/ArduboyQuest/`: Standalone USB/OLED firmware.
+- `PORTING.md`: Implementation notes and verification scope.
 
-Some C++ files reference excluded headers, so **this snapshot does not build as a game yet**. Source preparation and successful board execution are tracked separately.
+Build `src/`, not the archival `vendor/` snapshot. The original 128×64 logical coordinates are retained. The 112×64 playfield is sampled into 72×34; the bottom six rows and menus use native-resolution lettering.
 
-## Verify the snapshot
+![Actual OLED sword pickup](verification/sword-acquired.png)
+
+## Build and verification
 
 ```powershell
 python tools/prepare_sources.py --check
+python tools/check_maps.py
+./tools/build.ps1
 ```
 
-This checks file integrity and excluded files. It does not test gameplay on an ESP32. The working Doom/controller project is available in [esp32-micro-world](https://github.com/despild/esp32-micro-world/tree/main/esp32c3mini-oled0.42-72x40).
+2026-11-10: verified all 106 compressed rooms, movement/room transitions, sword pickup/attack, inventory, live view OFF/ON, lock/heartbeat pause, saved progress after reboot and integrated Doom switching. See [verification scope](verification/README.md).
 
-New preparation tools are MIT-licensed; imported code retains the original MIT terms. This project is unaffiliated with Nintendo and includes no Nintendo ROMs or assets.
+Requires Arduino CLI, ESP32 Arduino core 3.1.1 and Python 3.10+. SSD1306 wiring is SDA5/SCL6, address 0x3C. Upload standalone firmware with `python tools/flash.py --port COM4`. Use the [parent integrated firmware](https://github.com/despild/esp32-micro-world/tree/main/esp32c3mini-oled0.42-72x40) to retain pet and Doom modes.
+
+Controls: arrows/WASD move, Ctrl/Z sword/confirm, Space secondary item, Enter/Tab inventory/map. The sword chest is two rooms right of the start; approach from below. Item/room progress is stored in the separate `ard-quest` NVS namespace; restarts begin at the region entrance. A complete playthrough has not been verified.
+
+New port code and tools are MIT-licensed; imported code retains the original MIT terms. This project is unaffiliated with Nintendo and includes no Nintendo ROMs or assets.

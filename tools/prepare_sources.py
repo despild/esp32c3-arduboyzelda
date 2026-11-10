@@ -54,7 +54,7 @@ def main():
         raise SystemExit('Excluded files already exist in destination; inspect them before publishing.')
     manifest_path.write_text(json.dumps({
         'upstream': UPSTREAM, 'revision': REVISION,
-        'status': 'Source preparation only; no playable ESP32 firmware yet.',
+        'status': 'Unmodified code snapshot; the playable ESP32 adaptation is maintained separately in src/.',
         'excluded': sorted(EXCLUDED), 'sha256': files,
     }, indent=2) + '\n', encoding='utf-8')
     print('Imported', len(files), 'source/license files; original graphics and sounds excluded.')

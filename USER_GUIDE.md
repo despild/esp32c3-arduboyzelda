@@ -1,51 +1,85 @@
-# 사용 가이드 / User guide
+# Pocket Quest 사용 가이드 / User guide
 
 ## 한국어
 
-이 저장소는 아직 플레이용 펌웨어가 아닙니다. 현재 ESP32에서 사용하는 펫·미니 던전·Doom은 [Pocket World](https://github.com/despild/esp32-micro-world/tree/main/esp32c3mini-oled0.42-72x40)의 컨트롤러와 펌웨어를 사용하세요. 이 저장소를 업로드해 기존 보드를 교체하지 마세요.
+통합 펌웨어를 설치한 뒤 Pocket World 컨트롤러에서 **Arduboy · 포켓 퀘스트**를 선택하세요. 기존 ‘던전’ 버튼과 별도 게임입니다. **새 모험**은 Arduboy 저장만 초기화합니다. 이어서 하려면 모드만 선택하세요.
 
-### 소스 확인
+| 입력 | 동작 |
+|---|---|
+| 방향키 / WASD | 이동 |
+| Ctrl / Z | 검 공격, 메뉴 확인 |
+| Space | 장착한 보조 아이템 |
+| Enter / Tab | 장비·지도 열기/닫기 |
+| Ctrl 길게 | 원본 장비 메뉴 방식 |
+
+시작 방에서 오른쪽으로 두 방 가면 검 상자가 있습니다. 아래에서 위로 접근해 검을 얻으세요. **모험 진행 저장**은 아이템·방 클리어 진행을 별도 `ard-quest` NVS에 저장합니다. 위치·적 상태 전체를 저장하지 않으며 재시작은 지역 입구에서 합니다. 라이브 뷰를 꺼도 OLED와 입력은 계속 동작합니다. Windows 잠금 시 모험은 멈추고 통합 호스트의 펫이 움직입니다.
+
+### 단독 빌드와 업로드
+
+Arduino CLI, Espressif Arduino core 3.1.1, Python 3.10+가 필요합니다. SSD1306 연결은 SDA5/SCL6, 주소 0x3C입니다. 원본 ROM이나 WAD는 필요하지 않습니다.
 
 ```powershell
-git clone https://github.com/despild/esp32c3-arduboyzelda.git
-cd esp32c3-arduboyzelda
 python tools/prepare_sources.py --check
+python tools/check_maps.py
+./tools/build.ps1
+python -m pip install 'esptool>=5,<6' pyserial Pillow
+python tools/flash.py --port COM4
 ```
 
-### 원본에서 다시 가져오기
+CLI가 기본 Arduino IDE 경로와 다르면 `-ArduinoCli 'C:/path/arduino-cli.exe'`를 사용합니다. 산출물은 `build/firmware/ArduboyQuest.ino.*`입니다. 업로드 전 컨트롤러를 닫고 기존 보드를 백업하세요. 단독 버전은 모험 게임만 포함하며 잠금이나 연결 단절 시 일시 정지합니다. 펫·Doom을 함께 사용하려면 [상위 통합 프로젝트](https://github.com/despild/esp32-micro-world/tree/main/esp32c3mini-oled0.42-72x40)를 사용하세요.
 
-Python 3.10+와 Git을 사용합니다. 원본 checkout은 수정하지 않은 고정 버전이어야 합니다.
+미리 빌드한 단독 파일은 `bin/`에 있습니다. `python tools/flash.py --port COM4 --build bin`으로 업로드할 수 있으며 [SHA256](bin/BUILD_INFO.json)을 제공합니다. 단독 파일은 빌드 검증을, 동일 게임 소스의 통합 버전은 실물 플레이 검증을 완료했습니다.
+
+### 검사
 
 ```powershell
-git clone https://github.com/Pharap/ardynia downloads/ardynia
-git -C downloads/ardynia checkout e07fafd1d076481c6fe3c0f85695c98e2dc976d6
-python tools/prepare_sources.py downloads/ardynia
-python tools/prepare_sources.py --check
+python tools/qa_board.py --port COM4 --inspect
+python tools/qa_board.py --port COM4
 ```
 
-가져오기 도구는 그래픽/폰트/음원 헤더를 제외합니다. 원본 `spritePngs`, `tilePngs`, 완성 게임 이미지 및 바이너리를 이 포트의 배포물에 추가하지 마세요. 남은 구현 작업은 [PORTING.md](PORTING.md)에 기록합니다.
+첫 명령은 현재 상태와 화면을 저장합니다. 두 번째 명령은 **새 모험으로 저장을 초기화하고** 실제 키 입력을 검사합니다. 컨트롤러를 닫고 실행하며 결과는 `output/board-qa/`에 저장합니다.
 
 ## English
 
-This repository is not playable firmware yet. Use the controller and firmware in [Pocket World](https://github.com/despild/esp32-micro-world/tree/main/esp32c3mini-oled0.42-72x40) for the working pet, mini dungeon and Doom. Do not replace your board firmware with this preparation snapshot.
+After installing integrated firmware, select **Arduboy · 포켓 퀘스트 (Pocket Quest)** in the Pocket World controller. It is separate from the original mini-dungeon button. **새 모험 (New adventure)** clears only Arduboy progress. Select just the mode to continue.
 
-### Inspect the source
+| Input | Action |
+|---|---|
+| Arrows / WASD | Move |
+| Ctrl / Z | Sword attack, menu confirm |
+| Space | Equipped secondary item |
+| Enter / Tab | Open/close inventory and map |
+| Hold Ctrl | Original inventory shortcut |
+
+The sword chest is two rooms to the right of the start. Approach from below. **모험 진행 저장 (Save adventure)** stores items and room completion in the separate `ard-quest` NVS namespace. It does not preserve exact positions or all actors; restarts begin at the region entrance. Live view can be disabled while OLED gameplay and controls continue. On Windows lock the adventure pauses while the integrated host displays the pet.
+
+### Standalone build and upload
+
+Requires Arduino CLI, Espressif Arduino core 3.1.1 and Python 3.10+. SSD1306 wiring: SDA5/SCL6, address 0x3C. No original ROM or WAD is required.
 
 ```powershell
-git clone https://github.com/despild/esp32c3-arduboyzelda.git
-cd esp32c3-arduboyzelda
 python tools/prepare_sources.py --check
+python tools/check_maps.py
+./tools/build.ps1
+python -m pip install 'esptool>=5,<6' pyserial Pillow
+python tools/flash.py --port COM4
 ```
 
-### Reimport from upstream
+Use `-ArduinoCli 'C:/path/arduino-cli.exe'` if the CLI is not at the default Arduino IDE path. Outputs are `build/firmware/ArduboyQuest.ino.*`. Close the controller and back up existing firmware before uploading. Standalone firmware contains only the adventure and pauses on lock/disconnection. Use the [parent integrated project](https://github.com/despild/esp32-micro-world/tree/main/esp32c3mini-oled0.42-72x40) to retain pet and Doom modes.
 
-Use Python 3.10+ and Git. The upstream checkout must be clean and at the pinned revision.
+Prebuilt standalone files are in `bin/`. Flash with `python tools/flash.py --port COM4 --build bin`; [SHA256 hashes](bin/BUILD_INFO.json) are provided. Standalone files passed compilation; real-board gameplay was tested using the integrated build of the same game source.
+
+### Verify
 
 ```powershell
-git clone https://github.com/Pharap/ardynia downloads/ardynia
-git -C downloads/ardynia checkout e07fafd1d076481c6fe3c0f85695c98e2dc976d6
-python tools/prepare_sources.py downloads/ardynia
-python tools/prepare_sources.py --check
+python tools/qa_board.py --port COM4 --inspect
+python tools/qa_board.py --port COM4
 ```
 
-The importer excludes graphics/font/audio headers. Do not add original `spritePngs`, `tilePngs`, complete game images or binaries to the derivative port's distribution. Remaining implementation work is documented in [PORTING.md](PORTING.md).
+The first command records current state and display. The second **starts a new adventure and clears its save** before testing real controls. Close the controller first. Results go to `output/board-qa/`.
+
+## USB protocol / USB 프로토콜
+
+115200 baud, newline commands: `HELLO`, `MODE 3`, `KEY n` every ~80ms, `LOCK 0/1`, `MIRROR 0/1`, `ARD STATE`, `ARD SAVE`, `ARD NEW`. Key bits: 0 secondary item / 보조 아이템, 1 sword / 검, 4/5 up/down / 위아래, 6/7 left/right / 좌우, 8/9 inventory / 장비.
+
+`ard` JSON reports position, room and inventory / 좌표·방·아이템 상태. `frame.hex` is the 360-byte SSD1306 page buffer / OLED 페이지 버퍼. The separate source snapshot is in `vendor/`; the port is in `src/`. Reapply adaptations with `tools/assemble_port.py`; regenerate original art with `tools/make_assets.py`.

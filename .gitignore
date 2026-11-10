@@ -5,8 +5,11 @@ output/
 __pycache__/
 *.pyc
 *.bin
+!bin/*.bin
 *.hex
 *.arduboy
 *.nes
 spritePngs/
 tilePngs/
+firmware/ArduboyQuest/src/
+local-arduino.yaml

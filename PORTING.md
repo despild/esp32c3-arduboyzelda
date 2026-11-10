@@ -1,29 +1,27 @@
-# 포팅 상태와 계획 / Porting status and plan
+# 포팅 내역 / Porting notes
 
-## 확인된 사항 / Confirmed
+원본 MIT 코드는 `vendor/ardynia/`에 유지하며 `tools/assemble_port.py`로 `src/game/`를 생성합니다. 플랫폼·렌더러·에셋은 `src/hal/`, `src/ArdAdventure.*`, 자체 game 파일에서 관리합니다.
 
-- 코드·그래픽 라이선스 분리와 고정 소스 inventory를 확인했습니다. / Code/artwork terms and the pinned source inventory have been reviewed.
-- 원본 논리 화면은 128×64이며 SSD1306 페이지 형식 버퍼는 1,024바이트입니다. 목표 출력은 72×40, 360바이트입니다. / The source logical display is 128×64 (1,024 bytes in page format); the target is 72×40 (360 bytes).
-- `drawBitmap.cpp`에는 AVR 전용 렌더링이 있으며 ESP32에서 직접 실행할 수 없습니다. / The bitmap renderer contains AVR-specific code and needs replacement.
-- `pgm_read_word`로 포인터를 읽는 경로는 ESP32의 32비트 포인터에 맞춰 수정해야 합니다. / Pointer reads using `pgm_read_word` need a 32-bit-safe replacement.
+The unchanged MIT snapshot remains in `vendor/ardynia/`; `tools/assemble_port.py` generates adapted `src/game/` files. Platform, rendering and new assets are maintained separately.
 
-## 미완료 작업 / Outstanding work
-
-| 작업 / Work | 적용 위치 / Location |
+| 변경 / Change | 위치 / Location |
 |---|---|
-| 자체 1비트 스프라이트·타일·폰트 및 제목 / Original one-bit sprites, tiles, font and title | Excluded `spriteBitmaps.h`, `tileBitmaps.h`, `tinyfontSprite.h`, `strings.h` replacements |
-| Arduboy 입력·프레임 버퍼 호환 계층 / Arduboy input/framebuffer compatibility | New ESP32 HAL for `Arduboy2Base` |
-| AVR 어셈블리 대신 클리핑된 C++ 렌더러 / Clipped portable C++ bitmap renderer | `drawBitmap.cpp` |
-| 포인터 크기와 부호 있는 속도값 검토 / Pointer-width and signed velocity audit | `game.cpp`, `loadEntity.cpp`, `hud.cpp`, `entities/skeleton.cpp` |
-| 게임 영역 축소 또는 카메라, 읽을 수 있는 HUD / Downsampled or camera-based playfield and readable HUD | Renderer and menu/HUD |
-| 오디오 제거 / Silent sound implementation | `sfx` replacement |
-| EEPROM 대신 NVS 저장 / NVS-backed persistence | `state.cpp` and platform storage |
-| USB 버튼 매핑·입력 타임아웃 / USB controls and input timeout | Same controller protocol as Pocket World |
-| 별도 펌웨어 빌드·실물 검증 / Standalone build and real-board tests | Boot, room transition, enemies, items, saves, reset |
-| 검증 후 Pocket World 게임 목록 통합 / Add controller mode after verification | Parent application |
+| 32비트 포인터 / 32-bit pointer reads | game, loadEntity, HUD |
+| AVR 어셈블리 교체 / Portable clipped bitmap renderer | drawBitmap.cpp |
+| NVS 저장 / Separate versioned save record | hal/SaveStore.h |
+| 자체 스프라이트·타일·폰트 / Original replacement artwork | make_assets.py, hal/Font.h |
+| 무음 / No audio allocations or assets | game/sfx.h |
+| 정수형·부호·콜백 수정 / Integer, signed velocity and callback corrections | entityTemplates, skeleton, torch, player |
+| 맵 경계·압축 길이·빈 엔티티 슬롯 검사 / Bounds checks | tileRoom, game |
+| 네이티브 HUD·장비·지도 / Native OLED menus | ArdAdventure.cpp |
+| Arduino 빌드 단위 통합 / Single-unit staging to reduce header discovery | stage_source.py |
 
-128×64를 단순히 72×40으로 축소하면 작은 글자와 공격 판정이 잘 보이지 않을 수 있습니다. 출력 해상도 변경만으로 게임 플레이 품질을 보장할 수 없으므로 새 에셋·HUD와 함께 검증해야 합니다.
+게임 좌표와 맵은 유지합니다. 112×64 게임 영역을 72×34로 축소하고, 아래 6줄에 HUD를 표시합니다. 자체 그림은 어두운 배경과 밝은 물체로 통일하여 원본 던전의 반전을 제거했습니다.
 
-Simply reducing 128×64 to 72×40 can obscure text and combat cues. A changed framebuffer size alone does not establish playability; replacement art and HUD need real display testing.
+Logical coordinates and maps are retained. The 112×64 playfield is sampled to 72×34 with a native six-row HUD. Replacement art uses dark backgrounds and bright objects; original dungeon inversion is removed.
 
-전체 펌웨어의 RAM/Flash 수치, 프레임 속도, 던전 완주 여부는 아직 측정하지 않았습니다. / Full-port RAM/flash use, frame rate and dungeon completion have not been measured yet.
+`tools/check_maps.py`: 필드 42 + 던전 64 = 106개 방이 각각 28개의 유효 타일로 해석되는지 검사 / validates all 106 compressed rooms.
+
+`tools/qa_board.py`: USB 입력으로 이동·방 전환·검 획득/공격·장비 메뉴·라이브 뷰·잠금 일시 정지 검사 / exercises real USB gameplay, menus, readback and pause.
+
+전체 퍼즐·보스 완주는 아직 검증하지 않았습니다. / A complete playthrough of all puzzles and bosses has not been verified.
