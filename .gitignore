@@ -1,0 +1,12 @@
+downloads/
+build/
+output/
+.venv/
+__pycache__/
+*.pyc
+*.bin
+*.hex
+*.arduboy
+*.nes
+spritePngs/
+tilePngs/
