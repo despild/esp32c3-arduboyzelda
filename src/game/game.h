@@ -98,7 +98,7 @@ class Game {
         int scene() const {return currentUpdate==&Game::updateTitle?1:currentUpdate==&Game::updateGameOver?2:currentUpdate==&Game::updateMenu?3:currentUpdate==&Game::updatePlay?0:4;}
         int row() const {return scene()==3?menu.row:titleRow;}
         const char* toastText() const {return toastCount&&toastString?(const char*)toastString:nullptr;}
-        void toggleMenu(){if(scene()==3){player.bButtonEntityType=menu.chosenItem;player.entities[1].type=UNSET;currentUpdate=&Game::updatePlay;currentRender=&Game::renderPlay;}else if(scene()==0){menu.row=0;menu.chosenItem=player.bButtonEntityType;prevUpdate=currentUpdate;prevRender=currentRender;currentUpdate=&Game::updateMenu;currentRender=&Game::renderMenu;}}
+        void toggleMenu(){if(scene()==3){menu.select();player.bButtonEntityType=menu.chosenItem;player.entities[1].type=UNSET;currentUpdate=&Game::updatePlay;currentRender=&Game::renderPlay;}else if(scene()==0){menu.open(player.bButtonEntityType);prevUpdate=currentUpdate;prevRender=currentRender;currentUpdate=&Game::updateMenu;currentRender=&Game::renderMenu;}}
         RoomType roomType;
         Entity entities[MAX_ENTITIES];
         bool isBossRoom;

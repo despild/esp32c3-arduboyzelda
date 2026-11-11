@@ -12,6 +12,8 @@
 | Enter / Tab | 장비·지도 열기/닫기 |
 | Ctrl 길게 | 원본 장비 메뉴 방식 |
 
+장비 화면은 보조 장비 세 칸을 항상 표시합니다. 방향키를 누르거나 길게 눌러 탐색하고, `-`는 미획득, `B`는 장착 중입니다. 보유한 장비에서 Ctrl 또는 Enter를 누르면 장착하고 닫습니다. 미획득 장비에서 Ctrl을 누르면 그대로이며, Enter/Tab으로 현재 장비를 유지한 채 닫을 수 있습니다. 검은 이 목록에서 선택하지 않고 플레이 중 Ctrl로 사용합니다. 오른쪽 지도는 방문 기록 표시이며 선택 커서가 없습니다.
+
 시작 방에서 오른쪽으로 두 방 가면 검 상자가 있습니다. 아래에서 위로 접근해 검을 얻으세요. **모험 진행 저장**은 아이템·방 클리어 진행을 별도 `ard-quest` NVS에 저장합니다. 위치·적 상태 전체를 저장하지 않으며 재시작은 지역 입구에서 합니다. 라이브 뷰를 꺼도 OLED와 입력은 계속 동작합니다. Windows 잠금 시 모험은 멈추고 통합 호스트의 펫이 움직입니다.
 
 ### 단독 빌드와 업로드
@@ -50,6 +52,8 @@ After installing integrated firmware, select **Arduboy · 포켓 퀘스트 (Pock
 | Space | Equipped secondary item |
 | Enter / Tab | Open/close inventory and map |
 | Hold Ctrl | Original inventory shortcut |
+
+Inventory always shows all three secondary-item slots. Tap or hold the arrows to browse; `-` means unowned and `B` means equipped. Ctrl or Enter equips an owned selection and closes the menu. Ctrl on an unowned slot leaves the menu open; Enter/Tab closes it without changing equipment. The sword is used directly with Ctrl during play and is not selected here. The map on the right displays visited rooms and has no selection cursor.
 
 The sword chest is two rooms to the right of the start. Approach from below. **모험 진행 저장 (Save adventure)** stores items and room completion in the separate `ard-quest` NVS namespace. It does not preserve exact positions or all actors; restarts begin at the region entrance. Live view can be disabled while OLED gameplay and controls continue. On Windows lock the adventure pauses while the integrated host displays the pet.
 

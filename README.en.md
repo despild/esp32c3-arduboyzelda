@@ -6,6 +6,8 @@ An independent repository porting an Arduboy-style top-down adventure for the ES
 
 **Pocket Quest is an experimental playable port.** The ESP32 compatibility layer, original art, native 72×40 HUD/menus and controller mode have passed real-board checks. Pocket World's original mini dungeon remains a separate mode.
 
+**2026-11-11 inventory fix:** All three slots can be browsed even with no secondary items. `-` marks unowned gear and `B` marks equipped gear; unowned gear cannot be equipped. [Screen and verification](verification/README.md).
+
 ## Selected source
 
 The source material is [Ardynia](https://github.com/Pharap/ardynia), originally by Matt Greer, pinned to revision `e07fafd1d076481c6fe3c0f85695c98e2dc976d6`. It targets the 128×64 Arduboy and includes game logic, entities, maps and inventory code.

@@ -21,3 +21,13 @@ ESP32-C3 4MB, SSD1306 72×40, SDA5/SCL6, Arduino ESP32 core 3.1.1.
 이 결과는 초기 플레이와 통합 검증입니다. 모든 던전·퍼즐·보스 완주는 검증하지 않았습니다. PC 잠금 알림 UI 검사는 앱 자체 창에 이벤트를 주입하며 실제 Windows 잠금은 실행하지 않습니다.
 
 These checks cover initial gameplay and integration, not a full playthrough of every dungeon, puzzle and boss. The controller WTS test injects events into its own window rather than locking Windows.
+
+## 2026-11-11 · 장비 화면 / Inventory 0.1.1
+
+단독 펌웨어를 실제 보드에 올려, 보조 장비 0개 상태에서도 세 슬롯의 커서 이동·길게 누르기·경계 처리·미획득 장착 거부·메뉴 재진입·라이브 뷰 OFF 중 입력을 확인했습니다. 검과 보유 아이템을 유지했으며 저장 초기화나 아이템 지급은 하지 않았습니다. 컴파일 시 빈/일부/전체 보유 상태의 선택 규칙도 검사합니다.
+
+The standalone firmware passed real-board cursor movement, hold repeat, boundaries, locked-item rejection, reopening and navigation with live view off, while owning zero secondary items. Sword/inventory were preserved; no save reset or item granting was used. Compile-time regressions also check selection rules for empty, partial and full inventories.
+
+[USB 결과 / USB results](inventory.json)
+
+![장비 커서 / Inventory cursor](inventory.png)

@@ -51,14 +51,18 @@ void ardRender(uint8_t o[360]){
     if(s.scene==3){
         label(o,0,0,"ITEMS");label(o,40,0,"MAP");
         const char* names[]={"BOOM","BOMB","RING"};
-        for(int i=0;i<s.items&&i<3;i++){label(o,6,10+i*8,names[i]);if(i==game.row())label(o,0,10+i*8,"X");}
-        if(!s.items)label(o,0,12,"NONE");
+        for(int i=0;i<3;i++){
+            int y=8+i*8;label(o,6,y,names[i]);
+            if(i>=s.items)label(o,30,y,"-");
+            else if(game.hero().bButtonEntityType==i+1)label(o,30,y,"B");
+            if(i==game.row()){put(o,0,y);put(o,0,y+4);put(o,1,y+1);put(o,1,y+3);put(o,2,y+2);}
+        }
         if(s.dungeon<4)for(int y=0;y<8;y++)for(int x=0;x<(s.dungeon?8:7);x++){
             int n=y*(s.dungeon?8:7)+x;if(n>=64)continue;
             bool current=x==s.roomX&&y==s.roomY,visited=State::gameState.mapStates[s.dungeon][n/8]&(1<<(n%8));
-            if(visited||current)for(int dy=0;dy<2;dy++)for(int dx=0;dx<2;dx++)put(o,40+x*4+dx,8+y*4+dy,!current||(frame/15)%2);
+            if(visited||current)for(int dy=0;dy<2;dy++)for(int dx=0;dx<2;dx++)put(o,40+x*4+dx,8+y*3+dy,!current||(frame/15)%2);
         }
-        label(o,0,35,"ENTER CLOSE");return;
+        label(o,0,35,QuestInventory::owned(game.row(),s.items)?"CTRL USE  ENTER OK":"LOCKED ENTER BACK");return;
     }
     // Keep all seven columns/four rows visible. Omit the tiny original HUD.
     for(int y=0;y<34;y++)for(int x=0;x<72;x++){
@@ -76,7 +80,7 @@ void ardSendState(){
     ArdStats s=ardStats();
     Serial.printf("{\"t\":\"ard\",\"x\":%d,\"y\":%d,\"rx\":%d,\"ry\":%d,\"dungeon\":%d,\"hp\":%d,\"maxhp\":%d,\"keys\":%d,\"sword\":%d,\"items\":%d,\"scene\":%d,\"attack\":%d,\"frames\":%lu,\"tiles\":[",s.x,s.y,s.roomX,s.roomY,s.dungeon,s.hp,s.maxHp,s.keys,s.sword,s.items,s.scene,s.attacking,(unsigned long)s.frames);
     for(int i=0;i<28;i++)Serial.printf("%s%d",i?",":"",TileRoom::rooms[TileRoom::currentRoomOffset+i]);
-    Serial.print("],\"entities\":[");bool first=true;
+    Serial.printf("],\"menu_row\":%d,\"equipped\":%d,\"entities\":[",game.row(),game.hero().bButtonEntityType);bool first=true;
     for(int i=0;i<MAX_ENTITIES;i++){Entity &e=game.entities[i];if(e.type==UNSET)continue;Serial.printf("%s[%d,%d,%d,%d]",first?"":",",e.type,e.x,e.y,e.health);first=false;}
     Serial.println("]}");
 }

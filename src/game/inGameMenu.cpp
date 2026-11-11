@@ -13,21 +13,16 @@ extern Renderer renderer;
 extern Arduboy2Base arduboy;
 
 void InGameMenu::update(byte frame) {
-    const int8_t maxRows = State::gameState.numAcquiredItems;
-
-    if (maxRows == 0) {
-        return;
+    bool up=arduboy.pressed(UP_BUTTON)||arduboy.pressed(LEFT_BUTTON);
+    bool down=arduboy.pressed(DOWN_BUTTON)||arduboy.pressed(RIGHT_BUTTON);
+    int8_t direction=up==down?0:down?1:-1;
+    if(!direction){heldDirection=0;heldFrames=0;return;}
+    if(direction!=heldDirection){heldDirection=direction;heldFrames=0;}
+    else if(heldFrames<255)++heldFrames;
+    if(heldFrames==0||heldFrames>=18){
+        row=QuestInventory::move(row,direction);
+        if(heldFrames>=18)heldFrames=13;
     }
-
-    if (arduboy.justPressed(UP_BUTTON)) {
-        row = max(row - 1, 0);
-    }
-
-    if (arduboy.justPressed(DOWN_BUTTON)) {
-        row = min(row + 1, maxRows - 1);
-    }
-
-    chosenItem = row + 1;
 }
 
 void InGameMenu::render(Player& player, uint8_t frame) {

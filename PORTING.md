@@ -24,4 +24,8 @@ Logical coordinates and maps are retained. The 112×64 playfield is sampled to 7
 
 `tools/qa_board.py`: USB 입력으로 이동·방 전환·검 획득/공격·장비 메뉴·라이브 뷰·잠금 일시 정지 검사 / exercises real USB gameplay, menus, readback and pause.
 
+`tools/qa_inventory.py`: 저장 초기화 없이 장비가 없는 상태의 커서 이동, 길게 누르기, 미획득 장착 차단, 메뉴 재진입, 라이브 뷰 OFF 중 입력을 검사합니다. / Checks inventory navigation, key repeat, locked-item rejection, reopening and input while readback is off, without resetting progress.
+
+2026-11-11: 보조 장비가 없으면 메뉴가 고정되어 보이던 문제를 수정했습니다. 세 슬롯을 항상 표시하고 장착 가능 여부를 구분합니다. 메뉴 재진입 시 현재 장착 슬롯을 유지합니다. / The menu now displays three browsable slots even with no secondary items, rejects unowned equipment and reopens on the equipped slot. Compile-time regressions cover empty, partial and full inventories in `hal/InventorySelection.h`.
+
 전체 퍼즐·보스 완주는 아직 검증하지 않았습니다. / A complete playthrough of all puzzles and bosses has not been verified.

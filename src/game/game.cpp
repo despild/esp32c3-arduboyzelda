@@ -533,12 +533,7 @@ void Game::updatePlay(uint8_t frame) {
     if (arduboy.pressed(A_BUTTON)) {
         holdACount += 1;
         if (holdACount == 50) {
-            if (player.bButtonEntityType != UNSET) {
-                menu.chosenItem = player.bButtonEntityType;
-                menu.row = player.bButtonEntityType - 1;
-            } else {
-                menu.row = 0;
-            }
+            menu.open(player.bButtonEntityType);
 
             push(&Game::updateMenu, &Game::renderMenu);
 
@@ -671,6 +666,8 @@ void Game::updateMenu(uint8_t frame) {
     menu.update(frame);
 
     if (arduboy.justPressed(A_BUTTON)) {
+        if(!menu.canEquip()) return;
+        menu.select();
         // respond to the decision
         player.bButtonEntityType = menu.chosenItem;
         player.entities[1].type = UNSET;
